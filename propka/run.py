@@ -42,6 +42,9 @@ def main():
     options, files = propka.lib.loadOptions()
 
     output = {}
+    if len(files) < 3:
+        print("Error hint: you must specify the <output>, <input.pdb> and at least one trajectory file")
+        exit()
     file_output = files[0]
     pdb_file = files[1]
     dcd_files = files[2:]
