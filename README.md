@@ -37,7 +37,7 @@ propka -q -i A:100,B:100 output.json my.pdb md1.dcd
 This will compute the pKa values for residue 100 from chain A and B
 from all frames.
 
-I also added one more option `-s` or `--skip` to allow users to subsample 
+I also added one more option `-s` or `--skip` to allow users to down-sample 
 the trajectory frames.
 
 ## Example output
