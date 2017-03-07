@@ -22,6 +22,8 @@ pip install -U ProDy
 ```
 
 ## Usage
+To see the usage, type `propka -h`.  
+
 ```
 propka output_pka.json my.pdb md1.dcd md2.dcd md3.dcd
 ```
@@ -32,9 +34,11 @@ save computation time, use the following command:
 ```
 propka -q -i A:100,B:100 output.json my.pdb md1.dcd
 ```
-This will compute the pKa values for residue 100 from chain A and B  
-for all frames.
+This will compute the pKa values for residue 100 from chain A and B
+from all frames.
 
+I also added one more option `-s` or `--skip` to allow users to subsample 
+the trajectory frames.
 
 ## Example output
 ```

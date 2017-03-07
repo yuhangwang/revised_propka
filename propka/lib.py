@@ -148,6 +148,8 @@ def loadOptions(*args):
     parser = OptionParser(usage)
 
     # loading the parser
+    parser.add_option("-s", "--skip", dest="skip", type="int", default=0,
+        help="only read one frame out of every N frames")
     parser.add_option("-f", "--file", action="append", dest="filenames",
            help="read data from <filename>, i.e. <filename> is added to arguments")
     parser.add_option("-r", "--reference", dest="reference", default="neutral",

@@ -51,7 +51,9 @@ def main():
         traj.addFile(f)
     traj.link(atoms)
 
-    for i in range(len(traj)):
+    for i in range(0, len(traj), options.skip+1):
+        if options.skip > 0:
+            traj.skip(options.skip)
         traj.next()
         p = PdbLines()
         writePDBStream(p, atoms)
