@@ -24,6 +24,7 @@ pip install -U ProDy
 ## Usage
 To see the usage, type `propka -h`.  
 
+A typical usage:
 ```
 propka output_pka.json my.pdb md1.dcd md2.dcd md3.dcd
 ```
