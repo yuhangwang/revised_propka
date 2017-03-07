@@ -6,6 +6,7 @@ import sys
 
 import propka.lib
 from propka.lib import info, warning
+import yaml
 
 
 def printHeader():
@@ -67,12 +68,13 @@ def writePKA(protein, parameters, filename=None, conformation ='1A',reference="n
     str  = "%s\n" % ( getPropkaHeader() )
     str += "%s\n" % ( getReferencesHeader() )
     str += "%s\n" % ( getWarningHeader() )
+    str = "{}\n".format(getWarningHeader())
 
     # writing pKa determinant section
     str += getDeterminantSection(protein,conformation, parameters)
 
     # writing pKa summary section
-    str += getSummarySection(protein,conformation,parameters)
+    str = getSummarySection(protein,conformation,parameters)
     str += "%s\n" % ( getTheLine() )
 
     # printing Folding Profile
@@ -85,6 +87,25 @@ def writePKA(protein, parameters, filename=None, conformation ='1A',reference="n
     file.write(str)
 
     file.close()
+
+
+# Steven
+def writePKAYaml(protein, parameters, filename=None, conformation ='1A',reference="neutral", direction="folding", verbose=False, options=None):
+    """
+    Write the pka-file based on the given protein
+    """
+    if filename == None:
+      filename = "%s_pka.yaml" % (protein.name)
+
+    with open(filename, "w") as OUT:
+        OUT.write(getSummarySectionYaml(protein,conformation,parameters))
+
+# Steven
+def getPkaResults(protein, parameters, conformation ='1A'):
+    """
+    Return a dictionary containing the summary of pKa's
+    """
+    return getSummaryDict(protein, conformation, parameters)
 
 
 def printTmProfile(protein, reference="neutral", window=[0., 14., 1.], Tm=[0.,0.], Tms=None, ref=None, verbose=False, options=None):
@@ -154,6 +175,28 @@ def getSummarySection(protein, conformation, parameters):
             str += "%s" % ( group.getSummaryString(parameters.remove_penalised_group) )
 
     return str
+
+# Steven
+def getSummaryDict(protein, conformation, parameters):
+    """
+    prints out the pka-section of the result
+    """
+    output = {}
+    # printing pKa summary
+    for residue_type in parameters.write_out_order:
+        for group in protein.conformations[conformation].groups:
+          if group.residue_type == residue_type:
+            output.update( group.getSummaryDict(parameters.remove_penalised_group) )
+
+    return output
+
+# Steven
+def getSummarySectionYaml(protein, conformation, parameters):
+    """
+    prints out the pka-section of the result
+    """
+    return yaml.dump(getSummaryDict(protein, conformation, parameters))
+    
 
 
 def getFoldingProfileSection(protein, conformation='AVR', direction="folding", reference="neutral", window=[0., 14., 1.0], verbose=False, options=None):

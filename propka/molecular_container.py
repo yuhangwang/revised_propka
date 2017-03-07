@@ -12,7 +12,7 @@ import propka.pdb, propka.version, propka.output, propka.conformation_container,
 from propka.lib import info, warning
 
 class Molecular_container:
-    def __init__(self, input_file, options=None):
+    def __init__(self, input_file, pdb_lines, options=None):
         # printing out header before parsing input
         propka.output.printHeader()
 
@@ -22,6 +22,7 @@ class Molecular_container:
         self.dir = os.path.split(input_file)[0]
         self.file = os.path.split(input_file)[1]
         self.name = self.file[0:self.file.rfind('.')]
+        self.name_with_dir = os.path.join(self.dir, self.name)  # Steven
         input_file_extension = input_file[input_file.rfind('.'):]
 
         # set the version
@@ -38,7 +39,8 @@ class Molecular_container:
         if input_file_extension[0:4] == '.pdb':
             # input is a pdb file
             # read in atoms and top up containers to make sure that all atoms are present in all conformations
-            [self.conformations, self.conformation_names] = propka.pdb.read_pdb(input_file, self.version.parameters,self)
+            # [self.conformations, self.conformation_names] = propka.pdb.read_pdb(input_file, self.version.parameters,self)
+            [self.conformations, self.conformation_names] = propka.pdb.read_pdb_lines(pdb_lines, self.version.parameters,self)
             if len(self.conformations)==0:
                 info('Error: The pdb file does not seems to contain any molecular conformations')
                 sys.exit(-1)
@@ -61,9 +63,10 @@ class Molecular_container:
             # find coupled groups
             self.find_covalently_coupled_groups()
 
+            # Steven: I don't need this output file
             # write out the input file
-            filename = self.file.replace(input_file_extension,'.propka_input')
-            propka.pdb.write_input(self, filename)
+            # filename = self.file.replace(input_file_extension,'.propka_input')
+            # propka.pdb.write_input(self, filename)
 
 
         elif input_file_extension == '.propka_input':
@@ -172,7 +175,8 @@ class Molecular_container:
         #                           direction=direction, options=options)
 
         # write out the average conformation
-        filename=os.path.join('%s.pka'%(self.name))
+        # filename=os.path.join('%s.pka'%(self.name))
+        filename=os.path.join('%s_pka.yaml'%(self.name_with_dir))  # Steven
 
         # if the display_coupled_residues option is true,
         # write the results out to an alternative pka file
@@ -182,11 +186,15 @@ class Molecular_container:
         if hasattr(self.version.parameters, 'output_file_tag') and len(self.version.parameters.output_file_tag)>0:
             filename=os.path.join('%s_%s.pka'%(self.name,self.version.parameters.output_file_tag))
 
-        propka.output.writePKA(self, self.version.parameters, filename=filename,
+        propka.output.writePKAYaml(self, self.version.parameters, filename=filename,
                                conformation='AVR',reference=reference,
                                direction=direction, options=options)
 
         return
+
+    # Steven
+    def get_pka_results(self):
+        return propka.output.getPkaResults(self, self.version.parameters, conformation='AVR')
 
     def getFoldingProfile(self, conformation='AVR',reference="neutral", direction="folding", grid=[0., 14., 0.1], options=None):
         # calculate stability profile

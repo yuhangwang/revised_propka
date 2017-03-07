@@ -44,7 +44,7 @@ using the tutorial http://propka.ki.ku.dk/~luca/wiki/index.php/PROPKA_3.1_Tutori
       #scripts = ["scripts/propka31.py"],  # use entry point below
       entry_points = {
         'console_scripts': [
-            'propka31 = propka.run:main',
+            'propka = propka.run:main',
             ],
         },
       zip_safe=True,

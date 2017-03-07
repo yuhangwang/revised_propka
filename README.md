@@ -1,81 +1,63 @@
-# PROPKA 3.1
-
-PROPKA predicts the pKa values of ionizable groups in proteins
-(version 3.0) and protein-ligand complexes (version 3.1)
-based on the 3D structure.
-
-For proteins without ligands both version should produce the same result.
-
-The method is described in the following papers, which you should cite
-in publications:
-
-* Sondergaard, Chresten R., Mats HM Olsson, Michal Rostkowski, and Jan H. Jensen. "Improved Treatment of Ligands and Coupling Effects in Empirical Calculation and Rationalization of pKa Values." Journal of Chemical Theory and Computation 7, no. 7 (2011): 2284-2295.
-
-* Olsson, Mats HM, Chresten R. Sondergaard, Michal Rostkowski, and Jan H. Jensen. "PROPKA3: consistent treatment of internal and surface residues in empirical pKa predictions." Journal of Chemical Theory and Computation 7, no. 2 (2011): 525-537.
-
-See [propka.ki.ku.dk](http://propka.ki.ku.dk/) for the PROPKA web server,
-using the [tutorial](http://propka.ki.ku.dk/~luca/wiki/index.php/PROPKA_3.1_Tutorial).
-
-## Modifications 
-
-This release of PROPKA 3.1 was modified by Oliver Beckstein
-<oliver.beckstein@asu.edu> from the released version.
-
-* Included patches from
-  https://github.com/schrodinger/propka-3.1/tree/python27-compat to
-  make it compatible with Python 2.7
-
-* Packaged for installation with setuptools.
+# Revised-PROPKA
+This is a revised version of [PROPKA3.1](https://github.com/jensengroup/propka-3.1.git).  
+If you are looking for the original version, please go to 
+https://github.com/jensengroup/propka-3.1.git
 
 
-## Installation
+## Changes
+* Allow user to load trajectories instead of pdb files
+* The output is in JSON format
+* No change to the pKa calculation modules
 
-Clone repository or unpack the tar ball and install with
-[setuptools](http://pythonhosted.org/setuptools/index.html) (note: if
-you don't have setuptools installed you will need an internet
-connection so that the installation procedure can download the
-required files):
+## Install
+```python
+git clone https://github.com/yuhangwang/revised_propka
+cd revised_propka
+python setup.py develop
+```
 
-    cd propka-3.1
-    python setup.py install --user
+You also need to install `ProDy` which is used for parsing PDB/DCD files.
+```
+pip install -U ProDy
+```
 
-This will install the `propka31` script in your executable directory,
-as configured for setuptools, for instance `~/.local/bin`. You can
-change the bin directory with the `--install-scripts` option. For
-example, in order to install in my `bin` directory in my home
-directory:
+## Usage
+```
+propka output_pka.json my.pdb md1.dcd md2.dcd md3.dcd
+```
+The output will be output_pka.json
 
-    python setup.py install --user --install-scripts ~/bin
-
-
-## Requirements
-
-* Python 2.7 or higher or Python 3.1 or higher 
-
-## Getting started
-
-1. Clone the code from GitHub
-2. `python setup.py install --user`
-2. Run `propka31` with a .pdb file (see Examples)
-
-## Examples
-
-Calculate using pdb file
-
-    propka31 1hpx.pdb
+If you only need the pKa for a particular residue and  
+save computation time, use the following command:
+```
+propka -q -i A:100,B:100 output.json my.pdb md1.dcd
+```
+This will compute the pKa values for residue 100 from chain A and B  
+for all frames.
 
 
-## Testing (for developers)
+## Example output
+```
+{
+    "ARG_100_A": [
+        12.246243386088594,
+        12.246243386088594
+    ],
+    "ARG_100_D": [
+        11.908591649550003,
+        11.908591649550003
+    ]
+}
+```
 
-Please run `Tests/runtest.py/` after changes before pushing commits.
+## Reading JSON files
+To read the output file, you can use python's built-in module `json`:
+```
+import json
 
-## References / Citations
+with open("output_pka.json", "r") as IN:
+    data = json.loads(IN.read())
 
-Please cite these references in publications:
-
-* Sondergaard, Chresten R., Mats HM Olsson, Michal Rostkowski, and Jan H. Jensen. "Improved Treatment of Ligands and Coupling Effects in Empirical Calculation and Rationalization of pKa Values." Journal of Chemical Theory and Computation 7, no. 7 (2011): 2284-2295.
-
-* Olsson, Mats HM, Chresten R. Sondergaard, Michal Rostkowski, and Jan H. Jensen. "PROPKA3: consistent treatment of internal and surface residues in empirical pKa predictions." Journal of Chemical Theory and Computation 7, no. 2 (2011): 525-537.
-
-
-
+for k, pkas in data.items():
+    print(k, pkas)
+```

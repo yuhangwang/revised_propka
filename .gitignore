@@ -1,4 +1,7 @@
-
+sandbox
+dist
+build
+PROPKA.egg-info/
 # Compiled python files
 *.py[cod]
 

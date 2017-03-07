@@ -1,4 +1,3 @@
-
 from __future__ import division
 from __future__ import print_function
 
@@ -37,6 +36,21 @@ def read_pdb(pdb_file, parameters, molecule):
 
     # read in all atoms in the file
     lines = get_atom_lines_from_pdb(pdb_file, ignore_residues = parameters.ignore_residues, keep_protons = molecule.options.keep_protons, chains=molecule.options.chains)
+    for (name, atom) in lines:
+        if not name in conformations.keys():
+            conformations[name] = Conformation_container(name=name, parameters=parameters, molecular_container=molecule)
+        conformations[name].add_atom(atom)
+
+    # make a sorted list of conformation names
+    names = sorted(conformations.keys(), key=propka.lib.conformation_sorter)
+
+    return [conformations, names]
+
+# Steven
+def read_pdb_lines(pdb_lines, parameters, molecule):
+    conformations = {}
+    # read in all atoms in the file
+    lines = get_atom_lines_from_pdb_lines(pdb_lines, ignore_residues = parameters.ignore_residues, keep_protons = molecule.options.keep_protons, chains=molecule.options.chains)
     for (name, atom) in lines:
         if not name in conformations.keys():
             conformations[name] = Conformation_container(name=name, parameters=parameters, molecular_container=molecule)
@@ -87,8 +101,10 @@ def resid_from_atom(a):
 
 
 def get_atom_lines_from_pdb(pdb_file, ignore_residues = [], keep_protons=False, tags = ['ATOM  ', 'HETATM'], chains=None):
+    return get_atom_lines_from_pdb_lines(propka.lib.open_file_for_reading(pdb_file).readlines())
 
-    lines = propka.lib.open_file_for_reading(pdb_file).readlines()
+def get_atom_lines_from_pdb_lines(pdb_lines, ignore_residues = [], keep_protons=False, tags = ['ATOM  ', 'HETATM'], chains=None):
+    lines = pdb_lines
     nterm_residue = 'next_residue'
     old_residue = None
     terminal = None

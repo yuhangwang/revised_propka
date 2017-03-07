@@ -548,6 +548,11 @@ class Group:
 
         return str
 
+    def getSummaryDict(self, remove_penalised_group=False):
+        if self.coupled_titrating_group and remove_penalised_group:
+            return ''
+        return {"_".join(self.label.split()): self.pka_value}
+
     def __str__(self):
         return 'Group (%s) for %s'%(self.type,self.atom)
 
