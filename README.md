@@ -7,7 +7,7 @@ https://github.com/jensengroup/propka-3.1.git
 ## Changes
 * Allow user to load trajectories instead of pdb files
 * The output is in JSON format
-* Allow large pdb files as input by switching to counter based atom index
+* Allow large pdb files as inputs by switching to counter based atom index
 * No change to the pKa calculation modules
 
 ## Install
