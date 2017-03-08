@@ -20,7 +20,7 @@ python setup.py develop
 ```
 
 You also need to install [ProDy](http://prody.csb.pitt.edu/downloads/)
-which is used for parsing PDB/DCD files.
+which is needed for parsing PDB/DCD files.
 ```
 pip install -U ProDy
 ```
