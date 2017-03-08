@@ -19,7 +19,8 @@ cd revised_propka
 python setup.py develop
 ```
 
-You also need to install `ProDy` which is used for parsing PDB/DCD files.
+You also need to install [ProDy](http://prody.csb.pitt.edu/downloads/)
+which is used for parsing PDB/DCD files.
 ```
 pip install -U ProDy
 ```
