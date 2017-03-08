@@ -21,6 +21,11 @@ You also need to install `ProDy` which is used for parsing PDB/DCD files.
 pip install -U ProDy
 ```
 
+## Update
+To get the latest update, just do `git pull` inside the `revised_propka` folder.  
+Since the package was installed in development mode, the command line tool `propka`
+will be updated instantly, much like the the way how symbolic links work.
+
 ## Usage
 To see the usage, type `propka -h`.  
 
