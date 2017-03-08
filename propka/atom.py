@@ -11,9 +11,9 @@ class Atom:
       Atom class - contains all atom information found in the pdbfile
     """
 
-    def __init__(self, line=None, verbose=False):
+    def __init__(self, atom_index=0, line=None, verbose=False):
 
-        self.set_properties(line)
+        self.set_properties(line, atom_index)
 
         self.residue_label = "%-3s%4d%2s" % (self.name,self.resNumb, self.chainID)
 
@@ -51,7 +51,7 @@ class Atom:
 
 
 
-    def set_properties(self, line):
+    def set_properties(self, line, atom_index):
 
         self.name = ''
         self.numb = 0
@@ -69,7 +69,8 @@ class Atom:
 
         if line:
             self.name = line[12:16].strip()
-            self.numb = int( hybrid36.decode(line[ 6:11]) )
+            # self.numb = int( hybrid36.decode(line[ 6:11]) )
+            self.numb = atom_index
             self.x = float( line[30:38].strip() )
             self.y = float( line[38:46].strip() )
             self.z = float( line[46:54].strip() )

@@ -109,6 +109,7 @@ def get_atom_lines_from_pdb_lines(pdb_lines, ignore_residues = [], keep_protons=
     old_residue = None
     terminal = None
     model = 1
+    atom_index = 0  # Steven
 
 
     for line in lines:
@@ -153,6 +154,7 @@ def get_atom_lines_from_pdb_lines(pdb_lines, ignore_residues = [], keep_protons=
 
             # set the terminal
             if  tag == 'ATOM  ':
+                atom_index += 1
                 if residue_name.strip() == 'N' and nterm_residue == residue_number:
                     terminal = 'N+'
                 if  residue_name.strip() in ['OXT','O\'\'']:
@@ -160,7 +162,8 @@ def get_atom_lines_from_pdb_lines(pdb_lines, ignore_residues = [], keep_protons=
                     nterm_residue = 'next_residue'
                     old_residue = residue_number
             # and yield the atom
-            atom = Atom(line=line)
+            # atom = Atom(line=line)
+            atom = Atom(atom_index=atom_index, line=line)  # Steven
             atom.terminal = terminal
             #if keep_protons:
             #    atom.is_protonated = True
