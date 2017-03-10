@@ -21,6 +21,14 @@ def expand_dict(old_d, new_d):
         else:
             old_d[k].append(new_d[k])
 
+def get_pka(atoms, pdb_file, options):
+        p = PdbLines()
+        writePDBStream(p, atoms)
+        pdb_lines = p.get_lines()
+        my_molecule = propka.molecular_container.Molecular_container(pdb_file, pdb_lines, options)
+        my_molecule.calculate_pka()
+        return my_molecule.get_pka_results()
+
 # def main():
 #     """
 #     Reads in structure files, calculates pKa values, and prints pKa files
@@ -42,28 +50,30 @@ def main():
     options, files = propka.lib.loadOptions()
 
     output = {}
-    if len(files) < 3:
-        print("Error hint: you must specify the <output>, <input.pdb> and at least one trajectory file")
-        exit()
     file_output = files[0]
     pdb_file = files[1]
-    dcd_files = files[2:]
-    atoms = parsePDB(pdb_file)
-    traj = Trajectory(dcd_files[0])
-    for f in dcd_files[1:]:
-        traj.addFile(f)
-    traj.link(atoms)
 
-    for i in range(0, len(traj), options.skip+1):
-        if options.skip > 0:
-            traj.skip(options.skip)
-        traj.next()
-        p = PdbLines()
-        writePDBStream(p, atoms)
-        pdb_lines = p.get_lines()
-        my_molecule = propka.molecular_container.Molecular_container(pdb_file, pdb_lines, options)
-        my_molecule.calculate_pka()
-        expand_dict(output, my_molecule.get_pka_results())
+    atoms = parsePDB(pdb_file)
+    
+    if len(files) > 2:
+        dcd_files = files[2:]
+        traj = Trajectory(dcd_files[0])
+        for f in dcd_files[1:]:
+            if not os.path.isfile(f):
+                print("ERROR HINT: file {} doesn't exist".format(f))
+                exit()
+            traj.addFile(f)
+        traj.link(atoms)
+
+        print("trajectory length:", len(traj))
+
+        for i in range(0, len(traj), options.skip+1):
+            traj.next()
+            expand_dict(output, get_pka(atoms, pdb_file, options))
+            if options.skip > 0:
+                traj.skip(options.skip)
+    else:
+        expand_dict(output, get_pka(atoms, pdb_file, options))
 
     with open(file_output, "w") as OUT:
         OUT.write(json.dumps(output, indent=4))
@@ -71,7 +81,7 @@ def main():
 def single(pdbfile, optargs=None):
     """Run a single PROPKA calculation using *pdbfile* as input.
 
-    Commandline options can be passed as a **list** in *optargs*.
+    Command line options can be passed as a **list** in *optargs*.
 
     .. rubric:: Example
 
